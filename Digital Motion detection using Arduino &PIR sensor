@@ -1,0 +1,30 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+7
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Set the LCD address to 0x27 for a 16 chars and 2 line display
+int pirPin = 2; // Set the pin for the PIR sensor
+int buzzerPin = 8; // Set the pin for the buzzer
+void setup() {
+ pinMode(pirPin, INPUT); // Set the PIR sensor pin as an input
+ pinMode(buzzerPin, OUTPUT); // Set the buzzer pin as an output
+ lcd.init(); // Initialize the LCD display
+ lcd.backlight(); // Turn on the LCD backlight
+ lcd.setCursor(0, 0); // Set the cursor to the first column of the first row
+ lcd.print("PIR Sensor Test"); // Print "PIR Sensor Test" to the LCD display
+}
+void loop() {
+ int pirStatus = digitalRead(pirPin); // Read the PIR sensor value
+ if (pirStatus == HIGH) { // Check if motion is detected
+ lcd.clear(); // Clear the LCD display
+ lcd.setCursor(0, 0); // Set the cursor to the first column of the first row
+ lcd.print("Motion Detected!"); // Print "Motion Detected!" to the LCD display
+ digitalWrite(buzzerPin, HIGH); // Turn on the buzzer
+ delay(500); // Wait for 500ms
+ digitalWrite(buzzerPin, LOW); // Turn off the buzzer
+ delay(500); // Wait for 500ms
+ lcd.clear(); // Clear the LCD display
+ lcd.setCursor(0, 0); // Set the cursor to the first column of the first row
+ lcd.print("PIR Sensor Test"); // Print "PIR Sensor Test" to the LCD display
+ }
+ delay(100); // Wait for 100ms before reading the sensor again
+}
