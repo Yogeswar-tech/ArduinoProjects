@@ -1,0 +1,52 @@
+#include <LiquidCrystal_I2C.h>
+#define TRIGGER_PIN 9
+#define ECHO_PIN 10
+#define BUZZER_PIN 11
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+void setup() {
+ Serial.begin(9600);
+ lcd.init();
+ lcd.backlight();
+ pinMode(TRIGGER_PIN, OUTPUT);
+ pinMode(ECHO_PIN, INPUT);
+ pinMode(BUZZER_PIN, OUTPUT);
+}
+void loop() {
+ float distance = getDistance();
+ displayDistance(distance);
+ delay(500);
+}
+float getDistance() {
+ digitalWrite(TRIGGER_PIN, LOW);
+ delayMicroseconds(2);
+3
+ digitalWrite(TRIGGER_PIN, HIGH);
+ delayMicroseconds(10);
+ digitalWrite(TRIGGER_PIN, LOW);
+ long duration = pulseIn(ECHO_PIN, HIGH);
+ float distance = duration * 0.034 / 2;
+ return distance;
+}
+void displayDistance(float distance) {
+ lcd.setCursor(0, 1);
+ lcd.print("Distance: ");
+ lcd.print(distance);
+ lcd.print(" cm");
+ if (distance <= 10) {
+ digitalWrite(BUZZER_PIN, HIGH);
+ } else {
+ digitalWrite(BUZZER_PIN, LOW);
+ }
+}
+void recordGPS() {
+ while (Serial.available() > 0) {
+ gps.encode(Serial.read());
+ }
+ if (gps.location.isValid()) {
+ lcd.setCursor(0, 0);
+ lcd.print("Lat: ");
+ lcd.print(gps.location.lat(), 6);
+ lcd.print(" Long: ");
+ lcd.print(gps.location.lng(), 6);
+ }
+}
